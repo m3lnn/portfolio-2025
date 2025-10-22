@@ -1,0 +1,276 @@
+:root{
+    --white: #FFFFFF;
+    --light: #FFFFED;
+
+    --dark: #393939;
+    --black: #000000;
+    --gray: rgba(0, 0, 0, 0.1);
+
+    --red: #E80051;
+    --pink: #FF12AF;
+
+    --orange: #FF6542;
+
+    --yellow: #F6AD00;
+    --yellow-10: #FFF1D0;
+
+    --green: #009B72;
+    --emrald: #24CF54;
+
+    --purple: #9747FF;
+
+    --blue: #0017E8;
+}
+
+/* Regular */
+@font-face {
+  font-family: "FT88";
+  src: url("../fonts/FT88-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Bold */
+@font-face {
+  font-family: "FT88";
+  src: url("../fonts/FT88-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Italic */
+@font-face {
+  font-family: "FT88";
+  src: url("../fonts/FT88-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Gothique */
+@font-face {
+  font-family: "FT88 Gothique";
+  src: url("../fonts/FT88-Gothique.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* School */
+@font-face {
+  font-family: "FT88 School";
+  src: url("../fonts/FT88-School.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+  /* Regular */
+  .ft88-regular {
+    font-family: "FT88", sans-serif;
+    font-weight: 400;
+  }
+
+  /* Bold */
+  .ft88-bold {
+    font-family: "FT88", sans-serif;
+    font-weight: 700;
+  }
+
+  /* Italic */
+  .ft88-italic {
+    font-family: "FT88", sans-serif;
+    font-style: italic;
+  }
+  /* Gothique */
+  .ft88-gothique {
+    font-family: "FT88 Gothique", sans-serif;
+  }
+
+  /* School */
+  .ft88-school {
+    font-family: "FT88 School", sans-serif;
+  }
+
+/* 
+
+    Primitive classes 
+    
+*/
+
+body {
+    font-family: "Geologica", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    background: var(--light);
+    margin: 0;
+    font-size: 14px;
+
+}
+
+header{
+  transition: transform 0.3s ease, background-color 0.5s ease;
+}
+
+h1{
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 14px;
+    margin: 0;
+    text-transform: uppercase;
+    opacity: 0.5;
+}
+
+h2{
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 14px;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+p{
+  margin: 0;
+  margin-bottom: 1em;  
+}
+
+.container{
+  margin-bottom: 3em;
+}
+
+/*
+    
+    Top heading
+
+*/
+
+.page-header{
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    background: var(--light);
+    padding: 20px 0;
+    font-family: 'FT88 School', sans-serif;
+    font-size: large;
+    color: var(--dark);
+    position: relative;
+}
+
+.page-header > div {
+            transition: opacity 0.3s ease;
+        }
+
+.heading-content{
+    padding: 2em 10em;
+    text-align: center;
+    background: var(--light);
+    color: var(--dark);
+    transition: padding 0.3s ease, opacity 0.3s ease;
+
+}
+.heading-quote {
+    margin: 5px 0;
+    font-family: 'FT88 School', sans-serif;
+    font-size:xx-large;
+    margin-bottom: 0px;
+                transition: font-size 0.3s ease, color 0.5s ease;
+
+}
+
+ /* State 2 styles */
+        body.state-2 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        header.state-2 .heading-quote {
+            color: var(--red);
+        }
+
+        body.state-2 .heading-content p {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        header.state-2 .page-header span {
+            color: var(--red);
+        }
+
+        /* Animation states */
+        page-header.expanding {
+            transform: padding(0);
+        }
+
+        page-header.at-apex {
+            transform: padding(2);
+        }
+
+        body.transitioning {
+            animation: colorShift 0.6s ease forwards;
+        }
+
+        @keyframes colorShift {
+            0% {
+                filter: brightness(1);
+            }
+            50% {
+                filter: brightness(1.2);
+            }
+            100% {
+                filter: brightness(1);
+            }
+        }
+
+/*
+
+    Main content
+
+*/
+.main-content{
+    border-radius: 20px;
+    background: var(--white);
+    min-height: 100vh;
+    margin: 0 10px;
+    border-top: 3px solid var(--gray);;
+    padding: 2em 10em;
+    color: var(--dark);
+}
+
+/* Projects Section */
+
+.projects-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  margin-bottom: 5rem;
+  position: relative;
+  padding: 2em 0;
+  border-top: 1px solid var(--gray)
+}
+
+
+.projects-year {
+  position: sticky;
+  top: 2rem;
+  flex: 0 0 150px;
+  height: fit-content;
+}
+
+.project-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
+.project-card {
+  padding: 1.5rem;
+  border-radius: 12px;
+  height: 200px;
+  background: #f9f9f9;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
