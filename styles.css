@@ -67,34 +67,6 @@
   font-display: swap;
 }
 
-
-  /* Regular */
-  .ft88-regular {
-    font-family: "FT88", sans-serif;
-    font-weight: 400;
-  }
-
-  /* Bold */
-  .ft88-bold {
-    font-family: "FT88", sans-serif;
-    font-weight: 700;
-  }
-
-  /* Italic */
-  .ft88-italic {
-    font-family: "FT88", sans-serif;
-    font-style: italic;
-  }
-  /* Gothique */
-  .ft88-gothique {
-    font-family: "FT88 Gothique", sans-serif;
-  }
-
-  /* School */
-  .ft88-school {
-    font-family: "FT88 School", sans-serif;
-  }
-
 /* 
 
     Primitive classes 
@@ -135,26 +107,26 @@ h2{
     margin-bottom: 10px;
 }
 a {
-  color: var(--blue);
   font-family: "FT88", sans-serif;
   font-weight: 400;
   transition: all 0.2s ease;
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 /* Define the flicker animation */
 @keyframes flickerToItalic {
-  0%   { font-style: normal; color: var(--blue); }
-  15%  { font-style: italic; color: var(--red); }
-  30%  { font-style: normal; color: var(--blue); }
-  45%  { font-style: italic; color: var(--red); }
-  60%  { font-style: normal; color: var(--blue); }
-  75%  { font-style: italic; color: var(--red); }
-  100% { font-style: italic; color: var(--red); }
+  0%   { font-style: normal;}
+  15%  { font-style: italic; color: var(--light); }
+  30%  { font-style: normal;}
+  45%  { font-style: italic; color: var(--light); }
+  60%  { font-style: normal;}
+  75%  { font-style: italic; color: var(--light); }
+  100% { font-style: italic; color: var(--light); }
 }
 
 a:hover {
   animation: flickerToItalic 0.8s ease-in-out forwards;
+  background-color: var(--yellow);
 }
 
 
@@ -187,6 +159,8 @@ p{
     font-size: large;
     color: var(--dark);
     position: relative;
+    transition: color 0.3s ease;
+    transition: color 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .heading-content{
@@ -227,11 +201,12 @@ p{
     border-radius: 20px;
     background: var(--white);
     min-height: 100vh;
-    margin: 0 10px;
+    margin: 0 2em;
     border-top: 3px solid var(--gray);;
-    padding: 3em 6em;
+    padding: 6em;
     color: var(--dark);
     z-index: 10;
+    box-shadow: rgba(50, 50, 93, 0.15) 0px 50px 100px 20px, rgba(0, 0, 0, 0.1) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
 }
 
 /* Projects Section */
@@ -279,17 +254,19 @@ Footer
 footer {
   border-radius: 20px;
   background: var(--white);
-  margin: 2em 10px;
+  margin: 2em;
   border-bottom: 3px solid var(--gray);
-  padding: 1em 2em;
+  padding: 2em 6em;
   color: var(--dark);
   z-index: 10;
+  box-shadow: rgba(50, 50, 93, 0.15) 0px 50px 100px 20px, rgba(0, 0, 0, 0.1) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
 }
 
 .footer-head {
   font-family: "FT88 Gothique", sans-serif;
   font-size: clamp(3rem, 12vw, 10rem);
-  margin-bottom: 3rem;
+  margin: auto 0;
+  margin: 3rem 0;
   color: var(--blue);
   line-height: 1;
 }
@@ -332,14 +309,3 @@ footer {
   margin-top: 0.5rem;
 }
 
-@media (min-width: 768px) {
-  footer {
-    padding: 5em 4em;
-  }
-}
-
-@media (min-width: 1024px) {
-  footer {
-    padding: 6em;
-  }
-}

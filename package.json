@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "build": "node update-last-modified.js"
+  }
+}

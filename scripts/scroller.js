@@ -52,6 +52,31 @@ function initPixels() {
     }
 }
 
+
+
+function applyThemeColors() {
+    const primaryColor = colorSets[currentSetIndex][0];
+    const secondaryColor = colorSets[currentSetIndex][1];
+    
+    // Background + main text
+    body.style.backgroundColor = primaryColor;
+    content.style.color = secondaryColor;
+
+    // Update link colors
+    document.querySelectorAll('a').forEach(a => {
+        a.style.color = primaryColor;
+    });
+
+    // Optional: update other accent elements
+    document.querySelectorAll('.themed').forEach(el => {
+        el.style.color = primaryColor;
+    });
+
+    document.querySelectorAll('.themed-text').forEach(el => {
+        el.style.color = secondaryColor;
+    });
+}
+
 function getRandomIndex(currentIndex, arrayLength) {
     let newIndex;
     do {
@@ -81,8 +106,10 @@ function drawPixels() {
         ctx.fillRect(x, y, pixelWidth, pixelHeight);
     }
     
-    body.style.backgroundColor = colorSets[currentSetIndex][0];
+    applyThemeColors();
+
 }
+
 
 function updatePixels(progress) {
     const pixelsToTurn = Math.floor(progress * totalPixels);
@@ -141,8 +168,8 @@ function handlePullEnd() {
     }
     
     pixelStates.fill(0);
-    content.style.color = colorSets[currentSetIndex][1];
-    body.style.backgroundColor = colorSets[currentSetIndex][0];
+    
+    applyThemeColors();
     
     currentPull = 0;
     reachedThreshold = false;
@@ -153,7 +180,7 @@ function handlePullEnd() {
 // Initialize
 initPixels();
 resizeCanvas();
-content.style.color = colorSets[currentSetIndex][1];
+applyThemeColors();
 window.addEventListener('resize', resizeCanvas);
 
 // Touch events
