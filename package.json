@@ -1,5 +1,5 @@
 {
   "scripts": {
-    "build": "node update-last-modified.js"
+    "build": "node scripts/update-last-modified.js"
   }
 }
