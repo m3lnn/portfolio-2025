@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overscroll Interactive Box</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            overscroll-behavior: none;
+        }
+
+        .yellow-box {
+            position: relative;
+            padding-top: 40px;
+            padding-bottom: 40px;
+            transition: padding 0.1s ease-out;
+            overflow: hidden;
+        }
+
+        .pixel-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 0 40px;
+            position: relative;
+            z-index: 2;
+            transition: color 0.3s ease;
+        }
+
+        .content h1 {
+            margin-bottom: 20px;
+        }
+
+        .content p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .white-section {
+            background-color: white;
+            min-height: 200vh;
+            padding: 40px;
+        }
+
+        .white-section h2 {
+            margin-bottom: 20px;
+        }
+
+        .white-section p {
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="yellow-box" id="yellowBox">
+        <canvas class="pixel-canvas" id="pixelCanvas"></canvas>
+        <div class="content" id="content">
+            <h1 id="heading">Interactive Pixel Box</h1>
+            <p>Scroll down to see more content, then scroll back up past the top of the page to see the magic happen!</p>
+            <p>Watch as the pixels randomly transform and colors change as you pull. The box will expand and transform at the threshold.</p>
+        </div>
+    </div>
+
+    <div class="white-section">
+        <h2>Scroll Content</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+        <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <p>Scroll back to the top and keep scrolling up to see the overscroll effect!</p>
+        <br><br>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+    </div>
+
+    <script>
+        const yellowBox = document.getElementById('yellowBox');
+        const canvas = document.getElementById('pixelCanvas');
+        const ctx = canvas.getContext('2d');
+        const content = document.getElementById('content');
+        const heading = document.getElementById('heading');
+        
+        const basePadding = 40;
+        const maxPadding = 120;
+        const threshold = 80;
+        
+        const gridWidth = 100;
+        const gridHeight = 30;
+        const totalPixels = gridWidth * gridHeight;
+        
+        // Color sets: [background, text]
+        const colorSets = [
+            ['#FFD700', '#333333'], // Yellow / Dark Gray
+            ['#FF4444', '#FFFFFF'], // Red / White
+            ['#4169E1', '#FFFFFF'], // Royal Blue / White
+            ['#32CD32', '#1A1A1A'], // Lime Green / Almost Black
+            ['#FF1493', '#FFFFFF'], // Deep Pink / White
+            ['#9370DB', '#FFFFFF'], // Medium Purple / White
+            ['#FF6347', '#FFFFFF'], // Tomato / White
+            ['#20B2AA', '#FFFFFF'], // Light Sea Green / White
+            ['#FF8C00', '#1A1A1A'], // Dark Orange / Almost Black
+            ['#8B4513', '#FFFFFF']  // Saddle Brown / White
+        ];
+
+        // Headings list
+        const headings = [
+            'Interactive Pixel Box',
+            'Welcome Back!',
+            'Surprise!',
+            'Hello There!',
+            'Keep Exploring',
+            'Nice to See You',
+            'Ready for More?',
+            'Let\'s Go!',
+            'Awesome!',
+            'You Found It!'
+        ];
+        
+        let pixelStates = [];
+        let pixelOrder = [];
+        
+        let startY = 0;
+        let currentPull = 0;
+        let isAtTop = false;
+        let reachedThreshold = false;
+
+        let currentSetIndex = 0;
+        let nextSetIndex = 0;
+
+        // Initialize pixel states and create random order
+        function initPixels() {
+            pixelStates = new Array(totalPixels).fill(0); // 0 = current color, 1 = next color
+            pixelOrder = Array.from({length: totalPixels}, (_, i) => i);
+            
+            // Shuffle the order for random pixel transitions
+            for (let i = pixelOrder.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pixelOrder[i], pixelOrder[j]] = [pixelOrder[j], pixelOrder[i]];
+            }
+        }
+
+        // Get random index excluding current
+        function getRandomIndex(currentIndex, arrayLength) {
+            let newIndex;
+            do {
+                newIndex = Math.floor(Math.random() * arrayLength);
+            } while (newIndex === currentIndex);
+            return newIndex;
+        }
+
+        // Resize canvas to match yellow box
+        function resizeCanvas() {
+            canvas.width = yellowBox.offsetWidth;
+            canvas.height = yellowBox.offsetHeight;
+            drawPixels();
+        }
+
+        // Draw all pixels
+        function drawPixels() {
+            const pixelWidth = Math.ceil(canvas.width / gridWidth);
+            const pixelHeight = Math.ceil(canvas.height / gridHeight);
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < totalPixels; i++) {
+                const x = Math.floor((i % gridWidth) * (canvas.width / gridWidth));
+                const y = Math.floor(Math.floor(i / gridWidth) * (canvas.height / gridHeight));
+                
+                const colorIndex = pixelStates[i] === 0 ? currentSetIndex : nextSetIndex;
+                ctx.fillStyle = colorSets[colorIndex][0];
+                ctx.fillRect(x, y, pixelWidth, pixelHeight);
+            }
+        }
+
+        // Update pixels based on pull progress
+        function updatePixels(progress) {
+            const pixelsToTurn = Math.floor(progress * totalPixels);
+            
+            for (let i = 0; i < totalPixels; i++) {
+                pixelStates[i] = 0; // Reset to current color
+            }
+            
+            for (let i = 0; i < pixelsToTurn; i++) {
+                pixelStates[pixelOrder[i]] = 1; // Turn to next color in random order
+            }
+            
+            // Update text color based on progress
+            const currentTextColor = colorSets[currentSetIndex][1];
+            const nextTextColor = colorSets[nextSetIndex][1];
+            
+            // Interpolate between colors or switch at 50%
+            if (progress > 0.5) {
+                content.style.color = nextTextColor;
+            } else {
+                content.style.color = currentTextColor;
+            }
+            
+            drawPixels();
+        }
+
+        // Initialize
+        initPixels();
+        resizeCanvas();
+        content.style.color = colorSets[currentSetIndex][1];
+        window.addEventListener('resize', resizeCanvas);
+
+        window.addEventListener('scroll', () => {
+            isAtTop = window.scrollY === 0;
+        });
+
+        window.addEventListener('touchstart', (e) => {
+            if (isAtTop) {
+                startY = e.touches[0].clientY;
+                reachedThreshold = false;
+                nextSetIndex = getRandomIndex(currentSetIndex, colorSets.length);
+            }
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (isAtTop && window.scrollY === 0) {
+                const currentY = e.touches[0].clientY;
+                const pullDistance = Math.max(0, currentY - startY);
+                currentPull = Math.min(pullDistance, maxPadding - basePadding);
+                
+                const newPadding = basePadding + currentPull;
+                yellowBox.style.paddingTop = `${newPadding}px`;
+                yellowBox.style.paddingBottom = `${newPadding}px`;
+                
+                const progress = currentPull / threshold;
+                updatePixels(Math.min(progress, 1));
+                
+                if (currentPull >= threshold) {
+                    reachedThreshold = true;
+                }
+                
+                resizeCanvas();
+            }
+        });
+
+        window.addEventListener('touchend', () => {
+            yellowBox.style.paddingTop = `${basePadding}px`;
+            yellowBox.style.paddingBottom = `${basePadding}px`;
+            
+            if (reachedThreshold) {
+                // Change to next set
+                currentSetIndex = nextSetIndex;
+                for (let i = 0; i < totalPixels; i++) {
+                    pixelStates[i] = 0;
+                }
+                content.style.color = colorSets[currentSetIndex][1];
+                
+                // Change heading randomly
+                const newHeadingIndex = Math.floor(Math.random() * headings.length);
+                heading.textContent = headings[newHeadingIndex];
+            } else {
+                // Reset to current set
+                for (let i = 0; i < totalPixels; i++) {
+                    pixelStates[i] = 0;
+                }
+                content.style.color = colorSets[currentSetIndex][1];
+            }
+            
+            currentPull = 0;
+            reachedThreshold = false;
+            initPixels(); // Re-shuffle for next interaction
+            resizeCanvas();
+        });
+
+        // Desktop mouse support
+        let isMouseDown = false;
+
+        window.addEventListener('mousedown', (e) => {
+            if (isAtTop) {
+                isMouseDown = true;
+                startY = e.clientY;
+                reachedThreshold = false;
+                nextSetIndex = getRandomIndex(currentSetIndex, colorSets.length);
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isMouseDown && isAtTop && window.scrollY === 0) {
+                const currentY = e.clientY;
+                const pullDistance = Math.max(0, currentY - startY);
+                currentPull = Math.min(pullDistance, maxPadding - basePadding);
+                
+                const newPadding = basePadding + currentPull;
+                yellowBox.style.paddingTop = `${newPadding}px`;
+                yellowBox.style.paddingBottom = `${newPadding}px`;
+                
+                const progress = currentPull / threshold;
+                updatePixels(Math.min(progress, 1));
+                
+                if (currentPull >= threshold) {
+                    reachedThreshold = true;
+                }
+                
+                resizeCanvas();
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (isMouseDown) {
+                isMouseDown = false;
+                yellowBox.style.paddingTop = `${basePadding}px`;
+                yellowBox.style.paddingBottom = `${basePadding}px`;
+                
+                if (reachedThreshold) {
+                    // Change to next set
+                    currentSetIndex = nextSetIndex;
+                    for (let i = 0; i < totalPixels; i++) {
+                        pixelStates[i] = 0;
+                    }
+                    content.style.color = colorSets[currentSetIndex][1];
+                    
+                    // Change heading randomly
+                    const newHeadingIndex = Math.floor(Math.random() * headings.length);
+                    heading.textContent = headings[newHeadingIndex];
+                } else {
+                    // Reset to current set
+                    for (let i = 0; i < totalPixels; i++) {
+                        pixelStates[i] = 0;
+                    }
+                    content.style.color = colorSets[currentSetIndex][1];
+                }
+                
+                currentPull = 0;
+                reachedThreshold = false;
+                initPixels(); // Re-shuffle for next interaction
+                resizeCanvas();
+            }
+        });
+
+        // Wheel event for desktop scrolling
+        let wheelTimeout;
+        window.addEventListener('wheel', (e) => {
+            if (window.scrollY === 0 && e.deltaY < 0) {
+                e.preventDefault();
+                
+                if (currentPull === 0) {
+                    nextSetIndex = getRandomIndex(currentSetIndex, colorSets.length);
+                }
+                
+                const pullAmount = Math.abs(e.deltaY) * 0.5;
+                currentPull = Math.min(currentPull + pullAmount, maxPadding - basePadding);
+                
+                const newPadding = basePadding + currentPull;
+                yellowBox.style.paddingTop = `${newPadding}px`;
+                yellowBox.style.paddingBottom = `${newPadding}px`;
+                
+                const progress = currentPull / threshold;
+                updatePixels(Math.min(progress, 1));
+                
+                if (currentPull >= threshold) {
+                    reachedThreshold = true;
+                }
+                
+                resizeCanvas();
+                
+                clearTimeout(wheelTimeout);
+                wheelTimeout = setTimeout(() => {
+                    yellowBox.style.paddingTop = `${basePadding}px`;
+                    yellowBox.style.paddingBottom = `${basePadding}px`;
+                    
+                    if (reachedThreshold) {
+                        // Change to next set
+                        currentSetIndex = nextSetIndex;
+                        for (let i = 0; i < totalPixels; i++) {
+                            pixelStates[i] = 0;
+                        }
+                        content.style.color = colorSets[currentSetIndex][1];
+                        
+                        // Change heading randomly
+                        const newHeadingIndex = Math.floor(Math.random() * headings.length);
+                        heading.textContent = headings[newHeadingIndex];
+                    } else {
+                        // Reset to current set
+                        for (let i = 0; i < totalPixels; i++) {
+                            pixelStates[i] = 0;
+                        }
+                        content.style.color = colorSets[currentSetIndex][1];
+                    }
+                    
+                    currentPull = 0;
+                    reachedThreshold = false;
+                    initPixels(); // Re-shuffle for next interaction
+                    resizeCanvas();
+                }, 150);
+            }
+        }, { passive: false });
+    </script>
+</body>
+</html>
