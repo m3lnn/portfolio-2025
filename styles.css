@@ -108,7 +108,7 @@ body {
     background: var(--light);
     margin: 0;
     font-size: 14px;
-
+    position: relative;
 }
 
 header{
@@ -176,7 +176,6 @@ p{
   position: relative;
   transition: padding 0.1s ease-out;
   overflow: hidden;
-
 }
 
 .top-nav{
@@ -196,6 +195,8 @@ p{
     color: var(--dark);
     position: relative;
     z-index: 3;
+    transition: padding-top 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+              padding-bottom 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
 }
 .heading-quote {
@@ -204,6 +205,8 @@ p{
     font-size:xx-large;
     margin-bottom: 0px;
     transition: color 0.3s ease;
+    transition: color 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
 }
 
 .pixel-canvas {
@@ -228,6 +231,7 @@ p{
     border-top: 3px solid var(--gray);;
     padding: 3em 6em;
     color: var(--dark);
+    z-index: 10;
 }
 
 /* Projects Section */
@@ -279,6 +283,7 @@ footer {
   border-bottom: 3px solid var(--gray);
   padding: 1em 2em;
   color: var(--dark);
+  z-index: 10;
 }
 
 .footer-head {
